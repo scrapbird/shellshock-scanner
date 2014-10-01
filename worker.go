@@ -12,20 +12,22 @@ type WorkRequest struct {
 
 // defines a worker
 type Worker struct {
-	Id			int						// id of the worker
-	Work		chan WorkRequest		// channel to send work requests to this worker
-	WorkerQueue	chan chan WorkRequest	// channel to register with to receive jobs
-	Quit		chan bool				// worker will quit if a message is received here
-	Done		chan bool				// used to signal that worker is finished
+	Id				int						// id of the worker
+	Work			chan WorkRequest		// channel to send work requests to this worker
+	WorkerQueue		chan chan WorkRequest	// channel to register with to receive jobs
+	VulnerableUrls	chan string				// channel to send vulnerable urls to
+	Quit			chan bool				// worker will quit if a message is received here
+	Done			chan bool				// used to signal that worker is finished
 }
 
 // creates a worker
-func NewWorker(id int, workerQueue chan chan WorkRequest) Worker {
+func NewWorker(id int, workerQueue chan chan WorkRequest, vulnerableUrls chan string) Worker {
 	// create the worker
 	worker := Worker{
 		Id:				id,
 		Work:			make(chan WorkRequest),
 		WorkerQueue:	workerQueue,
+		VulnerableUrls:	vulnerableUrls,
 		Quit:			make(chan bool),
 		Done:			make(chan bool),
 	}
@@ -34,20 +36,22 @@ func NewWorker(id int, workerQueue chan chan WorkRequest) Worker {
 
 // starts the worker
 func (w Worker) Start() {
-	fmt.Printf("Starting worker %d\n", w.Id)
+	fmt.Printf("[%d] Starting\n", w.Id)
 	go func() {
 		for {
 			// add ourselves to the worker queue
 			w.WorkerQueue <- w.Work
-			fmt.Printf("Worker %d wainting for work\n", w.Id)
+			fmt.Printf("[%d] Waiting\n", w.Id)
 			select {
 			case work := <-w.Work:
-				fmt.Printf("Worker %d taking job: %s\n", w.Id, work.Url)
+				fmt.Printf("[%d] Checking: %s\n", w.Id, work.Url)
 				result := testUrl(work.Url)
-				fmt.Printf("result: %b\n", result)
+				if result {
+					w.VulnerableUrls <- work.Url
+				}
 			case <-w.Quit:
 				w.Done <- true
-				fmt.Printf("Worker %d stopping.\n", w.Id)
+				fmt.Printf("[%d] Stopping\n", w.Id)
 				return
 			}
 		}
