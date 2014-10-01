@@ -1,17 +1,17 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"os"
-	"bufio"
 )
 
 var nworkers int
 var infile string
 var outfile string
 
-func main () {
+func main() {
 	flag.IntVar(&nworkers, "workers", 1, "The number of worker threads to spawn")
 	flag.StringVar(&infile, "in", "", "File with list of urls to check for vulnerability")
 	flag.StringVar(&outfile, "out", "", "File to dump all vulnerable urls into")
@@ -32,17 +32,17 @@ func main () {
 	}
 
 	// open input file
-    inf, err := os.Open(infile)
-    if err != nil {
+	inf, err := os.Open(infile)
+	if err != nil {
 		fmt.Printf("Failed to open file: %s\n", infile)
 		return
-    }
-    // close file on exit and check if it returned an error
-    defer func() {
-        if err := inf.Close(); err != nil {
+	}
+	// close file on exit and check if it returned an error
+	defer func() {
+		if err := inf.Close(); err != nil {
 			fmt.Println("Warning: could not safely close file containing urls")
-        }
-    }()
+		}
+	}()
 
 	// open output file
 	outf, err := os.OpenFile(outfile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
@@ -108,4 +108,3 @@ func main () {
 
 	fmt.Println("All work is complete")
 }
-

@@ -12,24 +12,24 @@ type WorkRequest struct {
 
 // defines a worker
 type Worker struct {
-	Id				int						// id of the worker
-	Work			chan WorkRequest		// channel to send work requests to this worker
-	WorkerQueue		chan chan WorkRequest	// channel to register with to receive jobs
-	VulnerableUrls	chan string				// channel to send vulnerable urls to
-	Quit			chan bool				// worker will quit if a message is received here
-	Done			chan bool				// used to signal that worker is finished
+	Id             int                   // id of the worker
+	Work           chan WorkRequest      // channel to send work requests to this worker
+	WorkerQueue    chan chan WorkRequest // channel to register with to receive jobs
+	VulnerableUrls chan string           // channel to send vulnerable urls to
+	Quit           chan bool             // worker will quit if a message is received here
+	Done           chan bool             // used to signal that worker is finished
 }
 
 // creates a worker
 func NewWorker(id int, workerQueue chan chan WorkRequest, vulnerableUrls chan string) Worker {
 	// create the worker
 	worker := Worker{
-		Id:				id,
-		Work:			make(chan WorkRequest),
-		WorkerQueue:	workerQueue,
-		VulnerableUrls:	vulnerableUrls,
-		Quit:			make(chan bool),
-		Done:			make(chan bool),
+		Id:             id,
+		Work:           make(chan WorkRequest),
+		WorkerQueue:    workerQueue,
+		VulnerableUrls: vulnerableUrls,
+		Quit:           make(chan bool),
+		Done:           make(chan bool),
 	}
 	return worker
 }
