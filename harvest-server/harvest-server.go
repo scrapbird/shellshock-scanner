@@ -58,17 +58,17 @@ func handleSearch(w http.ResponseWriter, req *http.Request) {
 	fmt.Printf("Got request to start at %s\n", qstart)
 
 	// Store the user IP in ctx for use by code in other packages.
-	/*
 	userIP, err := userip.FromRequest(req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
-	}*/
-	ctx = userip.NewContext(ctx, nil)
+	}
+	ctx = userip.NewContext(ctx, userIP)
 
 	// Run the Google search and print the results.
 	start := time.Now()
 	results, err := google.Search(ctx, query, qstart)
+	fmt.Println(results)
 	elapsed := time.Since(start)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
