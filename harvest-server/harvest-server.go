@@ -16,7 +16,7 @@ import (
 	"net/http"
 	"time"
 
-	"./google"
+	"github.com/scrapbird/shellshock-scanner/harvest-server/google"
 	"code.google.com/p/go.blog/content/context/userip"
 	"code.google.com/p/go.net/context"
 )
