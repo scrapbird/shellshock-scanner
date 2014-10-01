@@ -11,6 +11,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -54,6 +55,7 @@ func handleSearch(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	qstart := req.FormValue("start")
+	fmt.Printf("Got request to start at %s\n", qstart)
 
 	// Store the user IP in ctx for use by code in other packages.
 	/*
